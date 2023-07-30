@@ -3,7 +3,7 @@ import random
 import time
 from moviepy.editor import VideoFileClip
 import subprocess
-import glob
+
 
 def get_video_duration(file_path):
     try:
@@ -15,7 +15,7 @@ def get_video_duration(file_path):
         print(f"Error while getting video duration: {str(e)}")
         return None
 
-def play_random_video(folder_path):
+def play_random_video(folder_path, repeat = int):
     # Get a list of video files in the folder
     video_extensions = [".mp4", ".avi", ".mkv", ".mov", ".wmv", ".flv", ".webm"]
     video_files = [file for file in os.listdir(folder_path) if file.lower().endswith(tuple(video_extensions))]
@@ -24,7 +24,7 @@ def play_random_video(folder_path):
         print("No video files found in the specified folder.")
         return
 
-    while True:
+    for _ in range(repeat):
         # Randomly select a video file from the list
         random_video = random.choice(video_files)
 
@@ -45,34 +45,18 @@ def play_random_video(folder_path):
             continue
 
         # Wait until the video ends
-        print(duration)
         time.sleep(duration)
-        
-    
-        print('getting new video folder')
 
-        # Choose a new folder and play one random video
-        new_folder = "F:\RetroTV\Music Video Channel\Daytime\Shows\Retro Music Video"
-        video_files_in_new_folder = glob.glob(os.path.join(new_folder, "*"))
-        if not video_files_in_new_folder:
-            print("No video files found in the new folder.")
-            break
-
-        random_video = random.choice(video_files_in_new_folder)
-        duration = get_video_duration(random_video)
-        print(duration)
-        if duration is None:
-            continue
-        try:
-            print(f"Playing random video from the new folder: {os.path.basename(random_video)}")
-            subprocess.Popen(["explorer", random_video])
-        except Exception as e:
-            print(f"Error opening the video: {str(e)}")
-            break
-        time.sleep(duration)
 
 if __name__ == "__main__":
     # Replace 'folder_path' with the actual path of your folder
-    folder_path = "F:\RetroTV\Music Video Channel\Daytime\Commercial"
+    original_folder_path = "F:\RetroTV\Music Video Channel\Daytime\Commercial"
+    new_folder_path = "F:\RetroTV\Music Video Channel\Daytime\Commercial"
+    while True:
+        print("Playing videos from the original folder:")
+        
+        play_random_video(original_folder_path, 2)
 
-    play_random_video(folder_path)
+        print("Playing videos from the new folder:")
+        
+        play_random_video(new_folder_path, 1)
