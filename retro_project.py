@@ -3,9 +3,10 @@ import random
 import time
 from moviepy.editor import VideoFileClip
 import subprocess
+import datetime
 
-
-def get_video_duration(file_path):
+# Gets duration of video 
+def get_video_duration(file_path): 
     try:
         video = VideoFileClip(file_path)
         duration = video.duration
@@ -14,6 +15,16 @@ def get_video_duration(file_path):
     except Exception as e:
         print(f"Error while getting video duration: {str(e)}")
         return None
+
+# Checks system time and will determine if "Night Time" is True. 
+def is_night_time():
+    now = datetime.datetime.now().time()
+    night_start = datetime.time(21, 0)  # 9 PM
+    night_end = datetime.time(7, 30)   # 7:30 AM
+
+    if night_start <= now or now <= night_end:
+        return True
+    return False
 
 def play_random_video(folder_path, repeat = int):
     # Get a list of video files in the folder
@@ -47,16 +58,18 @@ def play_random_video(folder_path, repeat = int):
         # Wait until the video ends
         time.sleep(duration)
 
-
 if __name__ == "__main__":
-    # Replace 'folder_path' with the actual path of your folder
-    original_folder_path = "F:\RetroTV\Music Video Channel\Daytime\Commercial"
-    new_folder_path = "F:\RetroTV\Music Video Channel\Daytime\Commercial"
+    # Replace '/path/to/your/folder' with the path of your folder containing video files
+    #Currently will play day time folders if system time is between 730 AM and 9 PM
+    day_time_folder_path = r"F:\RetroTV\Music Video Channel\Daytime\Commercial"
+    night_time_folder_path_commercial = r"F:\RetroTV\Music Video Channel\Night Time\Commercial"
+    night_time_folder_path_shows = r'F:\RetroTV\Music Video Channel\Night Time\Shows'
     while True:
-        print("Playing videos from the original folder:")
-        
-        play_random_video(original_folder_path, 2)
-
-        print("Playing videos from the new folder:")
-        
-        play_random_video(new_folder_path, 1)
+        if is_night_time():
+            print("Playing random videos from the night time folder:")
+            play_random_video(night_time_folder_path_commercial, 1)
+            #play_random_video(night_time_folder_path_shows, repeat = 1)
+        else:
+            print("Playing random videos from the day time folder:")
+            for _ in range(2):
+                play_random_video(day_time_folder_path, 1)
